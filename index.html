@@ -44,33 +44,36 @@
   }
 
   .app {
-    max-width: 430px;
+    max-width: 390px;
     margin: 0 auto;
-    padding: 20px 20px 40px;
+    padding: 8px 16px 8px;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
   }
 
   /* ── Header ── */
   .header {
     text-align: center;
-    padding: 24px 0 28px;
+    padding: 6px 0 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
   }
   .header-gem {
-    font-size: 24px;
-    display: block;
-    margin-bottom: 10px;
-    filter: drop-shadow(0 0 12px rgba(201,162,39,0.6));
+    font-size: 16px;
+    filter: drop-shadow(0 0 8px rgba(201,162,39,0.6));
   }
   .header-title {
-    font-size: 20px;
+    font-size: 16px;
     font-weight: 600;
     color: var(--text);
     letter-spacing: 0.04em;
   }
   .header-sub {
-    font-size: 12px;
-    color: var(--text3);
-    margin-top: 4px;
-    letter-spacing: 0.06em;
+    display: none;
   }
 
   /* ── Result Card ── */
@@ -78,9 +81,8 @@
     background: var(--surface);
     border: 1px solid var(--border-gold);
     border-radius: var(--radius);
-    padding: 28px 24px 22px;
+    padding: 14px 20px 12px;
     text-align: center;
-    margin-bottom: 20px;
     position: relative;
     overflow: hidden;
   }
@@ -94,14 +96,14 @@
   }
 
   .result-label {
-    font-size: 11px;
+    font-size: 10px;
     color: var(--text3);
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    margin-bottom: 8px;
+    margin-bottom: 4px;
   }
   .lot-number {
-    font-size: 72px;
+    font-size: 56px;
     font-weight: 700;
     color: var(--gold);
     line-height: 1;
@@ -110,45 +112,40 @@
     transition: all 0.15s ease;
   }
   .lot-unit {
-    font-size: 13px;
+    font-size: 11px;
     color: var(--text3);
     letter-spacing: 0.1em;
-    margin-top: 6px;
+    margin-top: 2px;
   }
 
   .risk-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-top: 20px;
-    padding-top: 18px;
+    gap: 8px;
+    margin-top: 10px;
+    padding-top: 10px;
     border-top: 1px solid var(--border);
   }
   .risk-item { text-align: center; }
-  .risk-label { font-size: 11px; color: var(--text3); margin-bottom: 5px; }
-  .risk-val-jpy { font-size: 17px; font-weight: 600; color: var(--blue); }
-  .risk-val-usd { font-size: 17px; font-weight: 600; color: var(--green); }
+  .risk-label { font-size: 10px; color: var(--text3); margin-bottom: 3px; }
+  .risk-val-jpy { font-size: 15px; font-weight: 600; color: var(--blue); }
+  .risk-val-usd { font-size: 15px; font-weight: 600; color: var(--green); }
 
   /* ── Input Section ── */
   .section-label {
-    font-size: 11px;
-    color: var(--text3);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    margin-bottom: 12px;
+    display: none;
   }
 
   .fields {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 20px;
+    gap: 8px;
   }
-  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field { display: flex; flex-direction: column; gap: 4px; }
   .field.full { grid-column: span 2; }
 
   .field label {
-    font-size: 11px;
+    font-size: 10px;
     color: var(--text2);
     letter-spacing: 0.05em;
     padding-left: 2px;
@@ -159,9 +156,9 @@
     border: 1px solid var(--border);
     border-radius: var(--radius-sm);
     color: var(--text);
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 500;
-    padding: 14px 14px;
+    padding: 10px 12px;
     width: 100%;
     outline: none;
     -webkit-appearance: none;
@@ -178,30 +175,30 @@
     background: var(--gold-bg);
     border: 1px solid rgba(201,162,39,0.15);
     border-radius: var(--radius-sm);
-    padding: 12px 16px;
-    font-size: 11px;
+    padding: 7px 12px;
+    font-size: 10px;
     color: var(--gold-dim);
-    line-height: 1.8;
+    line-height: 1.7;
     text-align: center;
-    letter-spacing: 0.03em;
+    letter-spacing: 0.02em;
   }
 
   /* ── Risk Bar ── */
   .risk-bar-wrap {
-    margin-top: 18px;
-    margin-bottom: 8px;
+    margin-top: 10px;
+    margin-bottom: 4px;
   }
   .risk-bar-header {
     display: flex;
     justify-content: space-between;
-    font-size: 11px;
+    font-size: 10px;
     color: var(--text3);
-    margin-bottom: 6px;
+    margin-bottom: 5px;
   }
   .risk-bar-bg {
     background: var(--surface2);
     border-radius: 4px;
-    height: 4px;
+    height: 3px;
     overflow: hidden;
   }
   .risk-bar-fill {
@@ -249,10 +246,10 @@
   /* ── Footer ── */
   .footer {
     text-align: center;
-    margin-top: 32px;
     font-size: 10px;
     color: var(--text3);
     letter-spacing: 0.06em;
+    padding: 4px 0;
   }
 </style>
 </head>
@@ -328,10 +325,26 @@
     1Lotあたりの1pip損益 = $10
   </div>
 
-  <div class="footer">GOLD LOT CALC · v1.1</div>
+  <div class="footer">© 2026 tote-denki · GOLD LOT CALC v1.3</div>
 </div>
 
 <script>
+const KEYS = ['marginJpy', 'risk', 'sl'];
+
+function saveInputs() {
+  KEYS.forEach(k => {
+    const v = document.getElementById(k).value;
+    if (v) localStorage.setItem('glc_' + k, v);
+  });
+}
+
+function loadInputs() {
+  KEYS.forEach(k => {
+    const v = localStorage.getItem('glc_' + k);
+    if (v) document.getElementById(k).value = v;
+  });
+}
+
 function setRateStatus(state, msg) {
   const dot = document.getElementById('rateDot');
   const txt = document.getElementById('rateMsg');
@@ -360,12 +373,14 @@ function fromJpy() {
   const jpy = parseFloat(document.getElementById('marginJpy').value) || 0;
   const rate = parseFloat(document.getElementById('usdjpy').value) || 1;
   document.getElementById('marginUsd').value = (jpy / rate).toFixed(2);
+  saveInputs();
   calc();
 }
 function fromUsd() {
   const usd = parseFloat(document.getElementById('marginUsd').value) || 0;
   const rate = parseFloat(document.getElementById('usdjpy').value) || 1;
   document.getElementById('marginJpy').value = Math.floor(usd * rate);
+  saveInputs();
   calc();
 }
 function calc() {
@@ -373,6 +388,7 @@ function calc() {
   const usd = parseFloat(document.getElementById('marginUsd').value) || 0;
   const riskPct = parseFloat(document.getElementById('risk').value) || 0;
   const sl = parseFloat(document.getElementById('sl').value) || 0;
+  saveInputs();
 
   if (usd > 0 && riskPct > 0 && sl > 0) {
     const riskUsd = usd * (riskPct / 100);
@@ -395,7 +411,10 @@ function calc() {
     document.getElementById('riskBarLabel').textContent = '0.0%';
   }
 }
-window.onload = function() { fetchRate(); };
+window.onload = function() {
+  loadInputs();
+  fetchRate();
+};
 </script>
 </body>
 </html>
