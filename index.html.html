@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="GOLDロット計算">
+<meta name="theme-color" content="#0d0d0d">
+<title>XAU/USD ロット計算</title>
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --gold: #c9a227;
+    --gold-dim: #8a6d15;
+    --gold-bg: rgba(201,162,39,0.08);
+    --bg: #0d0d0d;
+    --surface: #1a1a1a;
+    --surface2: #222222;
+    --border: rgba(255,255,255,0.08);
+    --border-gold: rgba(201,162,39,0.35);
+    --text: #f0f0f0;
+    --text2: #999;
+    --text3: #555;
+    --green: #3ddc84;
+    --blue: #5bb4ff;
+    --radius: 16px;
+    --radius-sm: 10px;
+  }
+
+  html, body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, 'Helvetica Neue', sans-serif;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Safe area for iPhone notch */
+  body {
+    padding: env(safe-area-inset-top, 20px) env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 20px) env(safe-area-inset-left, 0);
+  }
+
+  .app {
+    max-width: 430px;
+    margin: 0 auto;
+    padding: 20px 20px 40px;
+  }
+
+  /* ── Header ── */
+  .header {
+    text-align: center;
+    padding: 24px 0 28px;
+  }
+  .header-gem {
+    font-size: 24px;
+    display: block;
+    margin-bottom: 10px;
+    filter: drop-shadow(0 0 12px rgba(201,162,39,0.6));
+  }
+  .header-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: 0.04em;
+  }
+  .header-sub {
+    font-size: 12px;
+    color: var(--text3);
+    margin-top: 4px;
+    letter-spacing: 0.06em;
+  }
+
+  /* ── Result Card ── */
+  .result-card {
+    background: var(--surface);
+    border: 1px solid var(--border-gold);
+    border-radius: var(--radius);
+    padding: 28px 24px 22px;
+    text-align: center;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .result-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    opacity: 0.6;
+  }
+
+  .result-label {
+    font-size: 11px;
+    color: var(--text3);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .lot-number {
+    font-size: 72px;
+    font-weight: 700;
+    color: var(--gold);
+    line-height: 1;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+    transition: all 0.15s ease;
+  }
+  .lot-unit {
+    font-size: 13px;
+    color: var(--text3);
+    letter-spacing: 0.1em;
+    margin-top: 6px;
+  }
+
+  .risk-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 20px;
+    padding-top: 18px;
+    border-top: 1px solid var(--border);
+  }
+  .risk-item { text-align: center; }
+  .risk-label { font-size: 11px; color: var(--text3); margin-bottom: 5px; }
+  .risk-val-jpy { font-size: 17px; font-weight: 600; color: var(--blue); }
+  .risk-val-usd { font-size: 17px; font-weight: 600; color: var(--green); }
+
+  /* ── Input Section ── */
+  .section-label {
+    font-size: 11px;
+    color: var(--text3);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field.full { grid-column: span 2; }
+
+  .field label {
+    font-size: 11px;
+    color: var(--text2);
+    letter-spacing: 0.05em;
+    padding-left: 2px;
+  }
+
+  .field input {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    font-size: 18px;
+    font-weight: 500;
+    padding: 14px 14px;
+    width: 100%;
+    outline: none;
+    -webkit-appearance: none;
+    transition: border-color 0.15s;
+    font-variant-numeric: tabular-nums;
+  }
+  .field input:focus {
+    border-color: var(--gold);
+    background: #1e1e1e;
+  }
+
+  /* ── Pip Note ── */
+  .pip-note {
+    background: var(--gold-bg);
+    border: 1px solid rgba(201,162,39,0.15);
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    font-size: 11px;
+    color: var(--gold-dim);
+    line-height: 1.8;
+    text-align: center;
+    letter-spacing: 0.03em;
+  }
+
+  /* ── Risk Bar ── */
+  .risk-bar-wrap {
+    margin-top: 18px;
+    margin-bottom: 8px;
+  }
+  .risk-bar-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--text3);
+    margin-bottom: 6px;
+  }
+  .risk-bar-bg {
+    background: var(--surface2);
+    border-radius: 4px;
+    height: 4px;
+    overflow: hidden;
+  }
+  .risk-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    background: linear-gradient(90deg, var(--green), var(--gold));
+    transition: width 0.3s ease;
+    width: 0%;
+  }
+
+  /* ── Footer ── */
+  .footer {
+    text-align: center;
+    margin-top: 32px;
+    font-size: 10px;
+    color: var(--text3);
+    letter-spacing: 0.06em;
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="header">
+    <span class="header-gem">◈</span>
+    <div class="header-title">XAU/USD ロット計算</div>
+    <div class="header-sub">GOLD · POSITION SIZE CALCULATOR</div>
+  </div>
+
+  <!-- Result -->
+  <div class="result-card">
+    <div class="result-label">推奨ロット数</div>
+    <div class="lot-number" id="lotResult">0.00</div>
+    <div class="lot-unit">Lot</div>
+
+    <div class="risk-bar-wrap">
+      <div class="risk-bar-header">
+        <span>リスク使用率</span>
+        <span id="riskBarLabel">0.0%</span>
+      </div>
+      <div class="risk-bar-bg">
+        <div class="risk-bar-fill" id="riskBar"></div>
+      </div>
+    </div>
+
+    <div class="risk-row">
+      <div class="risk-item">
+        <div class="risk-label">許容損失（円）</div>
+        <div class="risk-val-jpy" id="riskJpy">¥0</div>
+      </div>
+      <div class="risk-item">
+        <div class="risk-label">許容損失（ドル）</div>
+        <div class="risk-val-usd" id="riskUsd">$0.00</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Inputs -->
+  <div class="section-label">入力</div>
+  <div class="fields">
+    <div class="field full">
+      <label>証拠金（円）</label>
+      <input type="number" id="marginJpy" value="1000000" inputmode="decimal" oninput="fromJpy()">
+    </div>
+    <div class="field">
+      <label>証拠金（ドル）</label>
+      <input type="number" id="marginUsd" inputmode="decimal" oninput="fromUsd()">
+    </div>
+    <div class="field">
+      <label>USD/JPY レート</label>
+      <input type="number" id="usdjpy" value="150.00" inputmode="decimal" oninput="calc()">
+    </div>
+    <div class="field">
+      <label>リスク（%）</label>
+      <input type="number" id="risk" value="2.0" step="0.1" inputmode="decimal" oninput="calc()">
+    </div>
+    <div class="field">
+      <label>損切り幅（pips）</label>
+      <input type="number" id="sl" value="50" inputmode="decimal" oninput="calc()">
+    </div>
+  </div>
+
+  <div class="pip-note">
+    1pip = $0.10幅 ／ 1Lot = 100oz（XAU/USD標準）<br>
+    1Lotあたりの1pip損益 = $10
+  </div>
+
+  <div class="footer">GOLD LOT CALC · v1.0</div>
+</div>
+
+<script>
+function fromJpy() {
+  const jpy = parseFloat(document.getElementById('marginJpy').value) || 0;
+  const rate = parseFloat(document.getElementById('usdjpy').value) || 1;
+  document.getElementById('marginUsd').value = (jpy / rate).toFixed(2);
+  calc();
+}
+function fromUsd() {
+  const usd = parseFloat(document.getElementById('marginUsd').value) || 0;
+  const rate = parseFloat(document.getElementById('usdjpy').value) || 1;
+  document.getElementById('marginJpy').value = Math.floor(usd * rate);
+  calc();
+}
+function calc() {
+  const jpy = parseFloat(document.getElementById('marginJpy').value) || 0;
+  const usd = parseFloat(document.getElementById('marginUsd').value) || 0;
+  const riskPct = parseFloat(document.getElementById('risk').value) || 0;
+  const sl = parseFloat(document.getElementById('sl').value) || 0;
+
+  if (usd > 0 && riskPct > 0 && sl > 0) {
+    const riskUsd = usd * (riskPct / 100);
+    const riskJpy = jpy * (riskPct / 100);
+    const lot = riskUsd / (sl * 10);
+    const lotDisplay = Math.floor(lot * 100) / 100;
+
+    document.getElementById('lotResult').textContent = lotDisplay.toFixed(2);
+    document.getElementById('riskUsd').textContent = '$' + riskUsd.toLocaleString('ja-JP', {minimumFractionDigits:2, maximumFractionDigits:2});
+    document.getElementById('riskJpy').textContent = '¥' + Math.floor(riskJpy).toLocaleString('ja-JP');
+
+    // Risk bar (cap at 5% = full)
+    const barPct = Math.min((riskPct / 5) * 100, 100);
+    document.getElementById('riskBar').style.width = barPct + '%';
+    document.getElementById('riskBarLabel').textContent = riskPct.toFixed(1) + '%';
+  } else {
+    document.getElementById('lotResult').textContent = '0.00';
+    document.getElementById('riskUsd').textContent = '$0.00';
+    document.getElementById('riskJpy').textContent = '¥0';
+    document.getElementById('riskBar').style.width = '0%';
+    document.getElementById('riskBarLabel').textContent = '0.0%';
+  }
+}
+window.onload = fromJpy;
+</script>
+</body>
+</html>
