@@ -212,6 +212,40 @@
     width: 0%;
   }
 
+  /* ── Rate Status ── */
+  .rate-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--text3);
+    margin-top: 4px;
+    padding-left: 2px;
+  }
+  .rate-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--text3);
+    flex-shrink: 0;
+  }
+  .rate-dot.loading { background: var(--gold); animation: pulse 1s infinite; }
+  .rate-dot.ok { background: var(--green); }
+  .rate-dot.err { background: #ff5f5f; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  .rate-refresh {
+    margin-left: auto;
+    background: none;
+    border: none;
+    color: var(--text3);
+    font-size: 14px;
+    cursor: pointer;
+    padding: 0 2px;
+    line-height: 1;
+  }
+  .rate-refresh:active { color: var(--gold); }
+
   /* ── Footer ── */
   .footer {
     text-align: center;
@@ -273,6 +307,11 @@
     <div class="field">
       <label>USD/JPY レート</label>
       <input type="number" id="usdjpy" value="150.00" inputmode="decimal" oninput="calc()">
+      <div class="rate-status">
+        <div class="rate-dot" id="rateDot"></div>
+        <span id="rateMsg">取得中...</span>
+        <button class="rate-refresh" id="refreshBtn" onclick="fetchRate()" title="再取得">↻</button>
+      </div>
     </div>
     <div class="field">
       <label>リスク（%）</label>
@@ -289,10 +328,34 @@
     1Lotあたりの1pip損益 = $10
   </div>
 
-  <div class="footer">GOLD LOT CALC · v1.0</div>
+  <div class="footer">GOLD LOT CALC · v1.1</div>
 </div>
 
 <script>
+function setRateStatus(state, msg) {
+  const dot = document.getElementById('rateDot');
+  const txt = document.getElementById('rateMsg');
+  dot.className = 'rate-dot ' + state;
+  txt.textContent = msg;
+}
+
+async function fetchRate() {
+  setRateStatus('loading', '取得中...');
+  try {
+    const res = await fetch('https://api.frankfurter.app/latest?from=USD&to=JPY');
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    const rate = data.rates.JPY;
+    document.getElementById('usdjpy').value = rate.toFixed(2);
+    const now = new Date();
+    const hm = now.getHours() + ':' + String(now.getMinutes()).padStart(2,'0');
+    setRateStatus('ok', '自動取得 ' + hm);
+    fromJpy();
+  } catch(e) {
+    setRateStatus('err', '取得失敗 - 手動入力してください');
+  }
+}
+
 function fromJpy() {
   const jpy = parseFloat(document.getElementById('marginJpy').value) || 0;
   const rate = parseFloat(document.getElementById('usdjpy').value) || 1;
@@ -321,7 +384,6 @@ function calc() {
     document.getElementById('riskUsd').textContent = '$' + riskUsd.toLocaleString('ja-JP', {minimumFractionDigits:2, maximumFractionDigits:2});
     document.getElementById('riskJpy').textContent = '¥' + Math.floor(riskJpy).toLocaleString('ja-JP');
 
-    // Risk bar (cap at 5% = full)
     const barPct = Math.min((riskPct / 5) * 100, 100);
     document.getElementById('riskBar').style.width = barPct + '%';
     document.getElementById('riskBarLabel').textContent = riskPct.toFixed(1) + '%';
@@ -333,7 +395,7 @@ function calc() {
     document.getElementById('riskBarLabel').textContent = '0.0%';
   }
 }
-window.onload = fromJpy;
+window.onload = function() { fetchRate(); };
 </script>
 </body>
 </html>
